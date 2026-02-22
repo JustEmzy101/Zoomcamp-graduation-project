@@ -17,8 +17,8 @@ default_args = {
     'email_on_retry': False,
     'retries': 0,
     'retry_delay': timedelta(seconds=3),
-    'on_failure_callback': send_pretty_email_failure,
-    'on_success_callback': send_pretty_email_success
+   # 'on_failure_callback': send_pretty_email_failure,
+   # 'on_success_callback': send_pretty_email_success
 }
 
 
