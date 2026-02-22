@@ -1,7 +1,7 @@
 from airflow import DAG
 from datetime import timedelta, datetime
 from airflow.operators.python import PythonOperator
-from email_utils import send_pretty_email_failure,send_pretty_email_success
+#from email_utils import send_pretty_email_failure,send_pretty_email_success
 
 def testing_email_notify():
     a = 3 + 4
