@@ -28,6 +28,6 @@ with DAG(dag_id='email_notification_etl',
         catchup=False) as dag:
 
         tsk_email_on_retry_on_fail = PythonOperator(
-            task_id= 'tsk_email_on_retry_on_fail',
+            task_id= 'testing_email_notify',
             python_callable=testing_email_notify
             )
