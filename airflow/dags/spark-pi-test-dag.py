@@ -5,7 +5,7 @@ from airflow.providers.cncf.kubernetes.operators.spark_kubernetes import SparkKu
 with DAG(
     dag_id="spark_pi",
     start_date=datetime(2024, 1, 1),
-    schedule_interval=None,
+    schedule=None,
     catchup=False,
     tags=["spark"]
 ) as dag:
