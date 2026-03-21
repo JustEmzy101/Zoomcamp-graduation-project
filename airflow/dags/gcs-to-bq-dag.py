@@ -6,7 +6,7 @@ from airflow.providers.cncf.kubernetes.operators.spark_kubernetes import SparkKu
 from airflow.operators.empty import EmptyOperator
 
 # git-sync mounts the full repo 
-REPO_ROOT = os.path.join(os.path.dirname(__file__), "..")
+REPO_ROOT = os.path.join(os.path.dirname(__file__), "../..")
 
 with open(os.path.join(REPO_ROOT, "spark_apps/gcs_to_bq.yaml")) as f:
     spark_app = yaml.safe_load(f)
