@@ -18,6 +18,7 @@ def build_spark_session(gcp_project: str) -> SparkSession:
         .config("spark.hadoop.fs.AbstractFileSystem.gs.impl", "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFS")
         .config("parentProject", gcp_project)
         .config("spark.sql.timestampType", "TIMESTAMP_LTZ")
+        .config("spark.sql.parquet.inferTimestampNTZ.enabled", "false")
         .getOrCreate()
     )
 
