@@ -1,0 +1,83 @@
+apiVersion: sparkoperator.k8s.io/v1beta2
+kind: SparkApplication
+metadata:
+  name: gcs-to-bq
+  namespace: spark
+spec:
+  type: Python
+  pythonVersion: "3"
+  mode: cluster
+  image: apache/spark-py:v3.4.0        
+  imagePullPolicy: IfNotPresent
+
+  mainApplicationFile: local:///opt/spark/jobs/gcs_to_bq.py
+
+  # GCS and BQ connectors downloaded at runtime
+  deps:
+    jars:
+      - https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-hadoop3-latest.jar
+      - https://github.com/GoogleCloudDataproc/spark-bigquery-connector/releases/download/0.34.0/spark-bigquery-with-dependencies_2.12-0.34.0.jar
+
+  arguments:
+    - "turing-chess-484608-k4"
+    - "gs://turing-chess-484608-k4-parquet-date/parquet_data/"
+    - "spark_dataset"
+    - "2024_dataset"
+    - "turing-chess-484608-k4-parquet-date"
+
+  sparkVersion: "3.4.0"
+  restartPolicy:
+    type: OnFailure
+    onFailureRetries: 2
+    onFailureRetryInterval: 30
+
+  volumes:
+    - name: gcp-key
+      secret:
+        secretName: spark-gcp-key
+    - name: spark-jobs
+      emptyDir: {}
+
+  driver:
+    cores: 1
+    memory: "2g"
+    memoryOverhead: "512m"
+    serviceAccount: spark
+    volumeMounts:
+      - name: gcp-key
+        mountPath: /etc/gcp
+        readOnly: true
+      - name: spark-jobs
+        mountPath: /opt/spark/jobs
+    initContainers:
+      - name: git-sync
+        image: alpine/git:latest
+        command:
+          - sh
+          - -c
+          - "git clone --depth 1 --branch main https://github.com/JustEmzy101/Zoomcamp-graduation-project.git /tmp/repo && cp /tmp/repo/spark-jobs/gcs_to_bq.py /opt/spark/jobs/gcs_to_bq.py && echo 'Script pulled' && ls -la /opt/spark/jobs/"
+        volumeMounts:
+          - name: spark-jobs
+            mountPath: /opt/spark/jobs
+
+  executor:
+    cores: 2
+    instances: 2
+    memory: "4g"
+    memoryOverhead: "1g"
+    volumeMounts:
+      - name: gcp-key
+        mountPath: /etc/gcp
+        readOnly: true
+      - name: spark-jobs
+        mountPath: /opt/spark/jobs
+    initContainers:
+      - name: git-sync
+        image: alpine/git:latest
+        command:
+          - sh
+          - -c
+          - "git clone --depth 1 --branch main https://github.com/JustEmzy101/Zoomcamp-graduation-project.git /tmp/repo && cp /tmp/repo/spark-jobs/gcs_to_bq.py /opt/spark/jobs/gcs_to_bq.py"
+        volumeMounts:
+          - name: spark-jobs
+            mountPath: /opt/spark/jobs
