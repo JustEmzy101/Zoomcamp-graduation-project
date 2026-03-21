@@ -17,6 +17,7 @@ def build_spark_session(gcp_project: str) -> SparkSession:
         .config("spark.hadoop.fs.gs.impl", "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem")
         .config("spark.hadoop.fs.AbstractFileSystem.gs.impl", "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFS")
         .config("parentProject", gcp_project)
+        .config("spark.sql.timestampType", "TIMESTAMP_LTZ")
         .getOrCreate()
     )
 
