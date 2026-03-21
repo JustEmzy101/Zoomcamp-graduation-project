@@ -26,18 +26,4 @@ with DAG(
         do_xcom_push=False,
         application_file=yaml.dump(spark_app),
     )
-```
 
----
-
-## Final folder structure
-```
-.
-├── dags/
-│   └── gcs_to_bq_dag.py
-├── spark_apps/
-│   └── gcs_to_bq.yaml
-├── spark_jobs/
-│   └── gcs_to_bq.py          # uploaded to GCS
-└── docker/
-    └── Dockerfile
