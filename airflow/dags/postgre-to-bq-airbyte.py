@@ -21,7 +21,7 @@ def trigger_airbyte_sync():
     sync_url = "http://airbyte-airbyte-server-svc.airbyte.svc.cluster.local"
     headers = {"Authorization": f"Bearer {token}"}
     sync_payload = {
-        "connectionId": "<YOUR_CONNECTION_ID>", 
+        "connectionId": "57d583a2-1f63-476d-9a08-0decd365f8a4", 
         "jobType": "sync"
     }
     
