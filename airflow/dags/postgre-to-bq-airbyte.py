@@ -5,7 +5,7 @@ from datetime import datetime
 
 def trigger_airbyte_sync():
     # 1. GET THE TOKEN
-    token_url = "http://10.43.8.59:8001"
+    token_url = "http://10.43.8.59/applications/token"
     payload = {
         "client_id": "04afdb14-1f34-4f9b-af8d-efc0d930f5b8",
         "client_secret": "e466244f389e1d723cd21d4b447ebe8e3e02371459f2c9aaf4c45b17b40b9817"
@@ -18,7 +18,7 @@ def trigger_airbyte_sync():
     print("Token acquired successfully!")
 
     # 2. TRIGGER THE SYNC (Replace <CONNECTION_ID> with yours from Airbyte UI URL)
-    sync_url = "http://airbyte-airbyte-server-svc.airbyte.svc.cluster.local"
+    sync_url = "http://10.43.8.59"
     headers = {"Authorization": f"Bearer {token}"}
     sync_payload = {
         "connectionId": "57d583a2-1f63-476d-9a08-0decd365f8a4", 
