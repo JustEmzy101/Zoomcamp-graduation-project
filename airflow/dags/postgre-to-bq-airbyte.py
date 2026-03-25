@@ -4,7 +4,7 @@ from airflow.providers.airbyte.operators.airbyte import AirbyteTriggerSyncOperat
 
 with DAG(dag_id='trigger_airbyte_job_example',
          default_args={'owner': 'airflow'},
-         schedule_interval='@daily',
+         schedule='@daily',
          start_date=days_ago(1)
     ) as dag:
 
