@@ -1,6 +1,6 @@
 import requests
 from airflow import DAG
-from airflow.ops.python import PythonOperator
+from airflow.providers.standard.operators.python import PythonOperator
 from datetime import datetime
 
 def trigger_airbyte_sync():
