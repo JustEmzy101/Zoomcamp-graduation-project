@@ -6,7 +6,7 @@ with DAG(
     dag_id='trigger_airbyte_sync',
     default_args={'retries': 1},
     start_date=datetime(2024, 1, 1),
-    schedule_interval='@daily',
+    schedule='@daily',
     catchup=False,
 ) as dag:
 
