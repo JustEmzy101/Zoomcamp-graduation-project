@@ -29,7 +29,7 @@ def trigger_airbyte_sync():
     print(f"Sync Response: {sync_response.text}")
     sync_response.raise_for_status()
 
-with DAG(dag_id='debug_airbyte_connection', start_date=datetime(2024, 1, 1), schedule_interval=None) as dag:
+with DAG(dag_id='debug_airbyte_connection', start_date=datetime(2024, 1, 1), schedule=None) as dag:
     PythonOperator(
         task_id='test_raw_http_sync',
         python_callable=trigger_airbyte_sync
