@@ -5,7 +5,7 @@ from datetime import datetime
 
 def trigger_airbyte_sync():
     # 1. GET THE TOKEN
-    token_url = "http://airbyte-airbyte-server-svc.airbyte.svc.cluster.local:8001"
+    token_url = "http://10.43.8.59:8001"
     payload = {
         "client_id": "04afdb14-1f34-4f9b-af8d-efc0d930f5b8",
         "client_secret": "e466244f389e1d723cd21d4b447ebe8e3e02371459f2c9aaf4c45b17b40b9817"
