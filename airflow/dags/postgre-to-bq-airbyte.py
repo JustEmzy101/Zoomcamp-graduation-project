@@ -16,7 +16,7 @@ with DAG(
         # Replace this with the UUID from your Airbyte Connection URL
         connection_id='57d583a2-1f63-476d-9a08-0decd365f8a4',
         asynchronous=False, # Set to True if you don't want to wait for it to finish
-        timeout=3600,       # 1 hour timeout
+     # 1 hour timeout
         wait_seconds=3      # Polling interval
     )
 
