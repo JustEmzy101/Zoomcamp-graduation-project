@@ -1,73 +1,92 @@
+# dags/airbyte_sync_dag.py
+import time
 import requests
 from airflow import DAG
-from airflow.providers.standard.operators.python import PythonOperator
+from airflow.operators.python import PythonOperator
 from datetime import datetime
 
-def trigger_airbyte_sync():
-    # 1. GET THE TOKEN
-    token_url = "http://10.43.8.59/applications/token"
-    payload = {
-        "client_id": "04afdb14-1f34-4f9b-af8d-efc0d930f5b8",
-        "client_secret": "e466244f389e1d723cd21d4b447ebe8e3e02371459f2c9aaf4c45b17b40b9817"
-    }
-    
-    print(f"Attempting to get token from {token_url}...")
-    token_response = requests.post(token_url, json=payload)
-    token_response.raise_for_status()
-    import requests
-from airflow import DAG
-from airflow.providers.standard.operators.python import PythonOperator
-from datetime import datetime
+# Internal k3s cluster DNS for Airbyte
+AIRBYTE_BASE_URL = "http://airbyte-airbyte-server-svc.airbyte.svc.cluster.local:8001/api/v1"
 
-def trigger_airbyte_sync():
-    # 1. GET THE TOKEN
-    token_url = "http://10.43.8.59/applications/token"
-    payload = {
-        "client_id": "04afdb14-1f34-4f9b-af8d-efc0d930f5b8",
-        "client_secret": "e466244f389e1d723cd21d4b447ebe8e3e02371459f2c9aaf4c45b17b40b9817"
-    }
-    
-    print(f"Attempting to get token from {token_url}...")
-    token_response = requests.post(token_url, json=payload)
-    token_response.raise_for_status()
-    token = token_response.json().get("access_token")
-    print("Token acquired successfully!")
+# Get your connection ID from the Airbyte UI URL:
+# /workspaces/<workspace_id>/connections/<CONNECTION_ID>/status
+AIRBYTE_CONNECTION_ID = "d1161597-ff7b-4b75-8d76-528eda729122"
 
-    # 2. TRIGGER THE SYNC (Replace <CONNECTION_ID> with yours from Airbyte UI URL)
-    sync_url = "http://10.43.8.59"
-    headers = {"Authorization": f"Bearer {token}"}
-    sync_payload = {
-        "connectionId": "57d583a2-1f63-476d-9a08-0decd365f8a4", 
-        "jobType": "sync"
-    }
-    
-    sync_response = requests.post(sync_url, json=sync_payload, headers=headers)
-    print(f"Sync Response: {sync_response.text}")
-    sync_response.raise_for_status()
 
-with DAG(dag_id='debug_airbyte_connection', start_date=datetime(2024, 1, 1), schedule=None) as dag:
-    PythonOperator(
-        task_id='test_raw_http_sync',
-        python_callable=trigger_airbyte_sync
-        print(f"Status Code: {token_response.status_code}")
-        print(f"Response Body: {token_response.text}")
-        token = token_response.json().get("access_token")
-    print("Token acquired successfully!")
-
-    # 2. TRIGGER THE SYNC (Replace <CONNECTION_ID> with yours from Airbyte UI URL)
-    sync_url = "http://10.43.8.59"
-    headers = {"Authorization": f"Bearer {token}"}
-    sync_payload = {
-        "connectionId": "57d583a2-1f63-476d-9a08-0decd365f8a4", 
-        "jobType": "sync"
-    }
-    
-    sync_response = requests.post(sync_url, json=sync_payload, headers=headers)
-    print(f"Sync Response: {sync_response.text}")
-    sync_response.raise_for_status()
-
-with DAG(dag_id='debug_airbyte_connection', start_date=datetime(2024, 1, 1), schedule=None) as dag:
-    PythonOperator(
-        task_id='test_raw_http_sync',
-        python_callable=trigger_airbyte_sync
+def trigger_airbyte_sync(connection_id: str) -> str:
+    """Triggers an Airbyte sync and returns the job ID."""
+    response = requests.post(
+        f"{AIRBYTE_BASE_URL}/connections/sync",
+        json={"connectionId": connection_id},
+        timeout=30,
     )
+    response.raise_for_status()
+    job_id = response.json()["job"]["id"]
+    print(f"Triggered Airbyte sync. Job ID: {job_id}")
+    return str(job_id)
+
+
+def wait_for_airbyte_sync(connection_id: str, poll_interval: int = 10, timeout: int = 3600):
+    """Polls Airbyte until the sync job for a connection completes."""
+    # First, get the latest job for this connection
+    response = requests.post(
+        f"{AIRBYTE_BASE_URL}/jobs/list",
+        json={"configId": connection_id, "configTypes": ["sync"], "count": 1},
+        timeout=30,
+    )
+    response.raise_for_status()
+    jobs = response.json().get("jobs", [])
+    if not jobs:
+        raise Exception("No sync job found for connection.")
+
+    job_id = jobs[0]["job"]["id"]
+    print(f"Monitoring Airbyte Job ID: {job_id}")
+
+    elapsed = 0
+    while elapsed < timeout:
+        status_response = requests.post(
+            f"{AIRBYTE_BASE_URL}/jobs/get",
+            json={"id": job_id},
+            timeout=30,
+        )
+        status_response.raise_for_status()
+        job_status = status_response.json()["job"]["status"]
+        print(f"Job {job_id} status: {job_status} (elapsed: {elapsed}s)")
+
+        if job_status == "succeeded":
+            print(f"Airbyte sync {job_id} completed successfully.")
+            return
+        elif job_status in ("failed", "cancelled"):
+            raise Exception(f"Airbyte sync {job_id} ended with status: {job_status}")
+
+        time.sleep(poll_interval)
+        elapsed += poll_interval
+
+    raise TimeoutError(f"Airbyte sync {job_id} timed out after {timeout}s.")
+
+
+with DAG(
+    dag_id="airbyte_oss_sync",
+    start_date=datetime(2024, 1, 1),
+    schedule_interval="@daily",
+    catchup=False,
+    tags=["airbyte", "ingestion"],
+) as dag:
+
+    trigger_sync = PythonOperator(
+        task_id="trigger_airbyte_sync",
+        python_callable=trigger_airbyte_sync,
+        op_kwargs={"connection_id": AIRBYTE_CONNECTION_ID},
+    )
+
+    wait_for_sync = PythonOperator(
+        task_id="wait_for_airbyte_sync",
+        python_callable=wait_for_airbyte_sync,
+        op_kwargs={
+            "connection_id": AIRBYTE_CONNECTION_ID,
+            "poll_interval": 10,
+            "timeout": 3600,
+        },
+    )
+
+    trigger_sync >> wait_for_sync
