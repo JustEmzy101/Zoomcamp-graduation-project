@@ -68,7 +68,7 @@ def wait_for_airbyte_sync(connection_id: str, poll_interval: int = 10, timeout: 
 with DAG(
     dag_id="airbyte_oss_sync",
     start_date=datetime(2024, 1, 1),
-    schedule_interval="@daily",
+    schedule=None,
     catchup=False,
     tags=["airbyte", "ingestion"],
 ) as dag:
