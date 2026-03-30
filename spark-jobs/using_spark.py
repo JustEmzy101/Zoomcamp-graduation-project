@@ -234,7 +234,7 @@ def main():
             write_to_bq(df_transformed, gcp_project, bq_dataset, bq_table, gcs_temp_bucket)
 
        
-        if discrepencies:
+        if discrepancies:
             logger.info(f"Discrepencies found: {discrepencies}")
             logger.info("Harmonizing schema...")
             harmonized_incoming_df = harmonize_schema(incoming_df, production_df)    
