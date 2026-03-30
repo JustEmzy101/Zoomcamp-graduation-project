@@ -62,9 +62,9 @@ spec:
             mountPath: /opt/spark/jobs
 
   executor:
-    cores: 2
+    cores: 1
     instances: 2
-    memory: "4g"
+    memory: "2g"
     memoryOverhead: "1g"
     volumeMounts:
       - name: gcp-key
