@@ -51,7 +51,7 @@ def compare_schemas(df1,df2):
             discrepancies.append(f"Column {key} is missing in second schema")
         if key in fields1 and key in fields2 and fields1[key] != fields2[key]:
             discrepancies.append(f"Column {key} has different types: {fields1[key]} vs {fields2[key]}")
-    logger.info(f"Differences:",discrepancies)
+    
     return discrepancies
 ###############################################################
 ######### Schema Merging Function ##################
@@ -228,6 +228,7 @@ def main():
         incoming_df_schema = incoming_df.schema
         production_df_schema = production_df.schema
         discrepancies = compare_schemas(incoming_df, production_df)
+        logger.info(f"Differences:",discrepancies)
         if production_df == None or discrepancies != True :
             # Normal Transformation happens here
             df_transformed = apply_transformations(incoming_df)
