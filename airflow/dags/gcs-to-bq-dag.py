@@ -12,9 +12,8 @@ with open(os.path.join(REPO_ROOT, "spark_apps/gcs_to_bq.yaml")) as f:
     spark_app = yaml.safe_load(f)
 
 default_args = {
-    "retries": 1,
-    "retry_delay": timedelta(seconds=10),
-    "retry_exponential_backoff": False,
+    'owner': 'airflow',
+    'depends_on_past': False,
 }
 
 with DAG(
