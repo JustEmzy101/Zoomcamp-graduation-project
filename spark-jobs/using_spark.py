@@ -198,7 +198,7 @@ def write_to_bq(df, gcp_project: str, bq_dataset: str, bq_table: str, gcs_temp_b
 
 
 def main():
-    Args passed from SparkApplication via spec.arguments
+
     gcp_project     = sys.argv[1]
     gcs_input_path  = sys.argv[2]   # e.g. gs://my-bucket/data/input/
     bq_dataset      = sys.argv[3]
