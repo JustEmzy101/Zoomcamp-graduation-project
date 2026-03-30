@@ -15,7 +15,7 @@ def fetch_spark_yaml(**kwargs):
     # Make the job name unique per DAG run (very important!)
     yaml_content = yaml_content.replace(
         "name: gcs-to-bq",
-        f"name: gcs-to-bq-{{{{ ds_nodash }}}}"
+        f"name: gcs-to-bq-{{{{ ds }}}}"
     )
     
     # Push the full YAML to XCom so the next task can use it
