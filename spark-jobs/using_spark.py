@@ -227,7 +227,7 @@ def main():
         logging.info(f"Schema: {incoming_df.schema}")
         incoming_df_schema = incoming_df.schema
         production_df_schema = production_df.schema
-        discrepencies = compare_schemas(incoming_df_schema, production_df_schema)
+        discrepencies = compare_schemas(incoming_df, production_df)
         if production_df == None or discripencies == False :
             # Normal Transformation happens here
             df_transformed = apply_transformations(incoming_df)
