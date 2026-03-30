@@ -50,18 +50,18 @@ spec:
       - name: spark-jobs
         mountPath: /opt/spark/jobs
     initContainers:
-  - name: git-sync
-    image: alpine/git:latest
-    command:
-      - sh
-      - -c
-      - |
-        git clone --depth 1 --branch main https://github.com/JustEmzy101/Zoomcamp-graduation-project.git /tmp/repo &&
-        cp /tmp/repo/spark-jobs/gcs_to_bq.py /opt/spark/jobs/ &&
-        chmod 644 /opt/spark/jobs/gcs_to_bq.py
-    volumeMounts:
-      - name: spark-jobs
-        mountPath: /opt/spark/jobs
+    - name: git-sync
+      image: alpine/git:latest
+      command:
+        - sh
+        - -c
+        - |
+          git clone --depth 1 --branch main https://github.com/JustEmzy101/Zoomcamp-graduation-project.git /tmp/repo &&
+          cp /tmp/repo/spark-jobs/gcs_to_bq.py /opt/spark/jobs/ &&
+          chmod 644 /opt/spark/jobs/gcs_to_bq.py
+      volumeMounts:
+        - name: spark-jobs
+          mountPath: /opt/spark/jobs
 
   executor:
     cores: 2
