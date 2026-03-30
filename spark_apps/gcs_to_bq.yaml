@@ -10,7 +10,7 @@ spec:
   image: apache/spark-py:v3.4.0        
   imagePullPolicy: IfNotPresent
 
-  mainApplicationFile: local:///opt/spark/jobs/gcs_to_bq.py
+  mainApplicationFile: local:///opt/spark/jobs/spark-jobs/gcs_to_bq.py
 
   # GCS and BQ connectors downloaded at runtime
   deps:
