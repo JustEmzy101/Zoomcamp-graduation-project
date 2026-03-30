@@ -51,14 +51,18 @@ spec:
         mountPath: /opt/spark/jobs
     initContainers:
     - name: git-sync
-      image: alpine/git:latest
-      command:
-        - sh
-        - -c
-        - |
-          git clone --depth 1 --branch main https://github.com/JustEmzy101/Zoomcamp-graduation-project.git /tmp/repo &&
-          cp /tmp/repo/spark-jobs/gcs_to_bq.py /opt/spark/jobs/ &&
-          chmod 644 /opt/spark/jobs/gcs_to_bq.py
+      image: k8s.gcr.io/git-sync/git-sync:v4.4.2
+      env:
+        - name: GITSYNC_REPO
+          value: "https://github.com/JustEmzy101/Zoomcamp-graduation-project.git"
+        - name: GITSYNC_BRANCH
+          value: "main"
+        - name: GITSYNC_ROOT
+          value: "/opt/spark/jobs"          # where the repo will be synced
+        - name: GITSYNC_DEPTH
+          value: "1"
+        - name: GITSYNC_ONE_TIME
+          value: "true"                      # exit after one sync
       volumeMounts:
         - name: spark-jobs
           mountPath: /opt/spark/jobs
@@ -75,15 +79,19 @@ spec:
       - name: spark-jobs
         mountPath: /opt/spark/jobs
     initContainers:
-      - name: git-sync
-        image: alpine/git:latest
-        command:
-          - sh
-          - -c
-          - |
-            git clone --depth 1 --branch main https://github.com/JustEmzy101/Zoomcamp-graduation-project.git /tmp/repo &&
-            cp /tmp/repo/spark-jobs/gcs_to_bq.py /opt/spark/jobs/ &&
-            chmod 644 /opt/spark/jobs/gcs_to_bq.py
-        volumeMounts:
-          - name: spark-jobs
-            mountPath: /opt/spark/jobs
+    - name: git-sync
+      image: k8s.gcr.io/git-sync/git-sync:v4.4.2
+      env:
+        - name: GITSYNC_REPO
+          value: "https://github.com/JustEmzy101/Zoomcamp-graduation-project.git"
+        - name: GITSYNC_BRANCH
+          value: "main"
+        - name: GITSYNC_ROOT
+          value: "/opt/spark/jobs"          # where the repo will be synced
+        - name: GITSYNC_DEPTH
+          value: "1"
+        - name: GITSYNC_ONE_TIME
+          value: "true"                      # exit after one sync
+      volumeMounts:
+        - name: spark-jobs
+          mountPath: /opt/spark/jobs
