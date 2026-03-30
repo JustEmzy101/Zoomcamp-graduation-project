@@ -18,7 +18,7 @@ default_args = {
 }
 
 with DAG(
-    dag_id="gcs_to_bq",
+    dag_id="Spark_Major_Job",
     start_date=datetime(2024, 1, 1),
     schedule=None,
     catchup=False,
