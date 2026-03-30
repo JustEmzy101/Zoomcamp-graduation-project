@@ -21,7 +21,7 @@ with DAG(
     start_date=datetime(2024, 1, 1),
     schedule=None,
     catchup=False,
-    tags=["ShouldWork","spark", "gcs", "bigquery"],
+    tags=["works","spark", "gcs", "bigquery"],
     default_args=default_args,
     
 ) as dag:
