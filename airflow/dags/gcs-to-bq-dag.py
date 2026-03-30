@@ -8,8 +8,8 @@ from airflow.operators.empty import EmptyOperator
 # git-sync mounts the full repo 
 REPO_ROOT = os.path.join(os.path.dirname(__file__), "../..")
 
-#with open(os.path.join(REPO_ROOT, "spark_apps/gcs_to_bq.yaml")) as f:
-    #spark_app = yaml.safe_load(f)
+with open(os.path.join(REPO_ROOT, "spark_apps/gcs_to_bq.yaml")) as f:
+    spark_app = yaml.safe_load(f)
 
 default_args = {
     'owner': 'airflow',
@@ -33,109 +33,9 @@ with DAG(
         namespace="spark",
         kubernetes_conn_id="kubernetes_default",
         do_xcom_push=False,
-        #application_file=yaml.dump(spark_app),
-        delete_on_termination=True,
-        application_file="""apiVersion: sparkoperator.k8s.io/v1beta2
-kind: SparkApplication
-metadata:
-  name: gcs-to-bq-{{ ds_nodash }}          # optional: make name unique per run
-  namespace: spark
-spec:
-  type: Python
-  pythonVersion: "3"
-  mode: cluster
-  image: apache/spark-py:v3.4.0
-  imagePullPolicy: IfNotPresent
-  mainApplicationFile: local:///opt/spark/jobs/spark-jobs/gcs_to_bq.py
-  deps:
-    jars:
-      - https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-hadoop3-latest.jar
-      - https://github.com/GoogleCloudDataproc/spark-bigquery-connector/releases/download/0.34.0/spark-bigquery-with-dependencies_2.12-0.34.0.jar
-  arguments:
-    - "turing-chess-484608-k4"
-    - "gs://turing-chess-484608-k4-parquet-date/parquet_data/"
-    - "spark_dataset"
-    - "2024_dataset"
-    - "turing-chess-484608-k4-parquet-date"
-  sparkVersion: "3.4.0"
-  restartPolicy:
-    type: OnFailure
-    onFailureRetries: 2
-    onFailureRetryInterval: 30
-  volumes:
-    - name: gcp-key
-      secret:
-        secretName: spark-gcp-key
-    - name: spark-jobs
-      emptyDir: {}
-  driver:
-    cores: 1
-    memory: "2g"
-    memoryOverhead: "512m"
-    serviceAccount: spark
-    securityContext:
-      fsGroup: 1000
-    volumeMounts:
-      - name: gcp-key
-        mountPath: /etc/gcp
-        readOnly: true
-      - name: spark-jobs
-        mountPath: /opt/spark/jobs
-    initContainers:
-    - name: git-sync
-      image: registry.k8s.io/git-sync/git-sync:v4.6.0
-      env:
-        - name: GITSYNC_REPO
-          value: "https://github.com/JustEmzy101/Zoomcamp-graduation-project.git"
-        - name: GITSYNC_BRANCH
-          value: "main"
-        - name: GITSYNC_ROOT
-          value: "/opt/spark/jobs"
-        - name: GITSYNC_DEPTH
-          value: "1"
-        - name: GITSYNC_ONE_TIME
-          value: "true"
-        - name: GITSYNC_PERMISSIONS
-          value: "755"
-      volumeMounts:
-        - name: spark-jobs
-          mountPath: /opt/spark/jobs
-  executor:
-    cores: 2
-    instances: 2
-    memory: "4g"
-    memoryOverhead: "1g"
-    securityContext:
-      fsGroup: 1000
-    volumeMounts:
-      - name: gcp-key
-        mountPath: /etc/gcp
-        readOnly: true
-      - name: spark-jobs
-        mountPath: /opt/spark/jobs
-    initContainers:
-    - name: wait-for-code
-      image: busybox:1.36
-      command: ['sh', '-c']
-      args:
-        - |
-          echo "Waiting for git-sync to finish..."
-          for i in $(seq 1 30); do
-            if [ -f /opt/spark/jobs/spark-jobs/gcs_to_bq.py ]; then
-              echo "✅ Python script found!"
-              ls -la /opt/spark/jobs/spark-jobs/
-              exit 0
-            fi
-            echo "Waiting... ($i/30)"
-            sleep 3
-          done
-          echo "❌ Timeout: script not found!"
-          ls -la /opt/spark/jobs/
-          exit 1
-      volumeMounts:
-        - name: spark-jobs
-          mountPath: /opt/spark/jobs
-"""
+        application_file=yaml.dump(spark_app),
+        delete_on_termination=True
+        
     )
 
     end = EmptyOperator(task_id="end")
