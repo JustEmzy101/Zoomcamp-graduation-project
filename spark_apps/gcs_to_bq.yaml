@@ -12,7 +12,6 @@ spec:
 
   mainApplicationFile: local:///opt/spark/jobs/spark-jobs/gcs_to_bq.py
 
-  # GCS and BQ connectors downloaded at runtime
   deps:
     jars:
       - https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-hadoop3-latest.jar
@@ -43,6 +42,11 @@ spec:
     memory: "2g"
     memoryOverhead: "512m"
     serviceAccount: spark
+
+    # Help with permissions on emptyDir
+    securityContext:
+      fsGroup: 1000   # common spark user gid
+
     volumeMounts:
       - name: gcp-key
         mountPath: /etc/gcp
@@ -64,6 +68,8 @@ spec:
           value: "1"
         - name: GITSYNC_ONE_TIME
           value: "true"
+        - name: GITSYNC_PERMISSIONS   # extra safety
+          value: "755"
       volumeMounts:
         - name: spark-jobs
           mountPath: /opt/spark/jobs
@@ -73,6 +79,10 @@ spec:
     instances: 2
     memory: "4g"
     memoryOverhead: "1g"
+
+    securityContext:
+      fsGroup: 1000
+
     volumeMounts:
       - name: gcp-key
         mountPath: /etc/gcp
@@ -86,12 +96,19 @@ spec:
       command: ['sh', '-c']
       args:
         - |
-          echo "Waiting for git-sync to complete on driver..."
-          until [ -f /opt/spark/jobs/spark-jobs/gcs_to_bq.py ]; do
-            echo "Python script not found yet... waiting 2s";
-            sleep 2;
+          echo "Waiting for git-sync to finish..."
+          for i in $(seq 1 30); do
+            if [ -f /opt/spark/jobs/spark-jobs/gcs_to_bq.py ]; then
+              echo "✅ Python script found!"
+              ls -la /opt/spark/jobs/spark-jobs/
+              exit 0
+            fi
+            echo "Waiting... ($i/30)"
+            sleep 3
           done
-          echo "Script found! Starting executor."
+          echo "❌ Timeout: script not found!"
+          ls -la /opt/spark/jobs/
+          exit 1
       volumeMounts:
         - name: spark-jobs
           mountPath: /opt/spark/jobs
