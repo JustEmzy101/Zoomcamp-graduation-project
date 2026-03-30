@@ -78,7 +78,7 @@ spec:
         command:
           - sh
           - -c
-          - "git clone --depth 1 --branch main https://github.com/JustEmzy101/Zoomcamp-graduation-project.git /tmp/repo && cp /tmp/repo/spark-jobs/gcs_to_bq.py /opt/spark/jobs/gcs_to_bq_spark.py"
+          - "git clone --depth 1 --branch main https://github.com/JustEmzy101/Zoomcamp-graduation-project.git /tmp/repo && cp /tmp/repo/spark-jobs/using_spark.py /opt/spark/jobs/using_spark.py"
         volumeMounts:
           - name: spark-jobs
             mountPath: /opt/spark/jobs
