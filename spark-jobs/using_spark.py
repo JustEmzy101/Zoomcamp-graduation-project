@@ -236,7 +236,7 @@ def main():
 
        
         if discrepancies:
-            logger.info(f"Discrepencies found: {discrepencies}")
+            logger.info(f"Discrepencies found: {discrepancies}")
             logger.info("Harmonizing schema...")
             harmonized_incoming_df = harmonize_schema(incoming_df, production_df)    
             df_transformed = apply_transformations(harmonized_incoming_df)
