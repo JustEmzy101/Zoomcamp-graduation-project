@@ -31,7 +31,7 @@ with DAG(
     gcs_to_bq = SparkKubernetesOperator(
         task_id="gcs_to_bq_task",
         namespace="spark",
-        kubernetes_conn_id="kubernetes_default",
+        kubernetes_conn_id="spark",
         do_xcom_push=False,
         application_file=yaml.dump(spark_app),
         delete_on_termination=True
