@@ -28,8 +28,8 @@ spec:
     - "gs://turing-chess-484608-k4-parquet-date/quarantine/"
   sparkVersion: "3.4.0"
   restartPolicy:
-    type: OnFailure
-    onFailureRetries: 2
+    type: Never
+    onFailureRetries: 0
     onFailureRetryInterval: 30
 
   volumes:
