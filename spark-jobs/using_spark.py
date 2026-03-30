@@ -227,8 +227,8 @@ def main():
         logging.info(f"Schema: {incoming_df.schema}")
         incoming_df_schema = incoming_df.schema
         production_df_schema = production_df.schema
-        discrepencies = compare_schemas(incoming_df, production_df)
-        if production_df == None or discrepancies == False :
+        discrepancies = compare_schemas(incoming_df, production_df)
+        if production_df == None or discrepancies != True :
             # Normal Transformation happens here
             df_transformed = apply_transformations(incoming_df)
             write_to_bq(df_transformed, gcp_project, bq_dataset, bq_table, gcs_temp_bucket)
