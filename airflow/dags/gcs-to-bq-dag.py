@@ -34,4 +34,4 @@ with DAG(
 
     )
 
-    fetch_yaml >> submit_spark_job
+starting >> submit_spark_job
