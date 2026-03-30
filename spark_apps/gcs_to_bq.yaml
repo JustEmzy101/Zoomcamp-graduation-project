@@ -9,51 +9,41 @@ spec:
   mode: cluster
   image: apache/spark-py:v3.4.0
   imagePullPolicy: IfNotPresent
-
   mainApplicationFile: local:///opt/spark/jobs/spark-jobs/gcs_to_bq.py
-
   deps:
     jars:
       - https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-hadoop3-latest.jar
       - https://github.com/GoogleCloudDataproc/spark-bigquery-connector/releases/download/0.34.0/spark-bigquery-with-dependencies_2.12-0.34.0.jar
-
   arguments:
     - "turing-chess-484608-k4"
     - "gs://turing-chess-484608-k4-parquet-date/parquet_data/"
     - "spark_dataset"
     - "2024_dataset"
     - "turing-chess-484608-k4-parquet-date"
-
   sparkVersion: "3.4.0"
   restartPolicy:
     type: OnFailure
     onFailureRetries: 2
     onFailureRetryInterval: 30
-
   volumes:
     - name: gcp-key
       secret:
         secretName: spark-gcp-key
     - name: spark-jobs
       emptyDir: {}
-
   driver:
     cores: 1
     memory: "2g"
     memoryOverhead: "512m"
     serviceAccount: spark
-
-    # Help with permissions on emptyDir
     securityContext:
-      fsGroup: 1000   # common spark user gid
-
+      fsGroup: 1000
     volumeMounts:
       - name: gcp-key
         mountPath: /etc/gcp
         readOnly: true
       - name: spark-jobs
         mountPath: /opt/spark/jobs
-
     initContainers:
     - name: git-sync
       image: registry.k8s.io/git-sync/git-sync:v4.6.0
@@ -68,28 +58,24 @@ spec:
           value: "1"
         - name: GITSYNC_ONE_TIME
           value: "true"
-        - name: GITSYNC_PERMISSIONS   # extra safety
+        - name: GITSYNC_PERMISSIONS
           value: "755"
       volumeMounts:
         - name: spark-jobs
           mountPath: /opt/spark/jobs
-
   executor:
     cores: 2
     instances: 2
     memory: "4g"
     memoryOverhead: "1g"
-
     securityContext:
       fsGroup: 1000
-
     volumeMounts:
       - name: gcp-key
         mountPath: /etc/gcp
         readOnly: true
       - name: spark-jobs
         mountPath: /opt/spark/jobs
-
     initContainers:
     - name: wait-for-code
       image: busybox:1.36
