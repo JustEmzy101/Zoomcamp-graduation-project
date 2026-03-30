@@ -40,4 +40,4 @@ with DAG(
 
     end = EmptyOperator(task_id="end")
 
-    start >> gcs_to_bq >> end
+    start >> spark_workflow >> end
