@@ -12,8 +12,8 @@ with open(os.path.join(REPO_ROOT, "spark_apps/using_spark.yaml")) as f:
     spark_app = yaml.safe_load(f)
 
 default_args = {
-    "retries": 2,
-    "retry_delay": timedelta(minutes=5),
+    "retries": 1,
+    "retry_delay": timedelta(seconds=10),
     "retry_exponential_backoff": True,
 }
 
@@ -29,8 +29,8 @@ with DAG(
 
     start = EmptyOperator(task_id="start")
 
-    gcs_to_bq = SparkKubernetesOperator(
-        task_id="gcs_to_bq_task",
+    spark_workflow = SparkKubernetesOperator(
+        task_id="spark_workflow",
         namespace="spark",
         kubernetes_conn_id="kubernetes_default",
         do_xcom_push=False,
