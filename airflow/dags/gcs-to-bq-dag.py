@@ -12,17 +12,17 @@ with open(os.path.join(REPO_ROOT, "spark_apps/gcs_to_bq.yaml")) as f:
     spark_app = yaml.safe_load(f)
 
 default_args = {
-    "retries": 2,
-    "retry_delay": timedelta(minutes=5),
-    "retry_exponential_backoff": True,
+    "retries": 1,
+    "retry_delay": timedelta(seconds=10),
+    "retry_exponential_backoff": False,
 }
 
 with DAG(
     dag_id="gcs_to_bq",
     start_date=datetime(2024, 1, 1),
-    schedule="@daily",
+    schedule=None,
     catchup=False,
-    tags=["spark", "gcs", "bigquery"],
+    tags=["Should_Work","spark", "gcs", "bigquery"],
     default_args=default_args,
     
 ) as dag:
