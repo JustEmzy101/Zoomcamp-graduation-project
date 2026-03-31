@@ -150,7 +150,7 @@ def make_spark_app(table: str, date: str) -> dict:
                 "memoryOverhead": exc["memoryOverhead"],
                 "labels":         {"app": f"etl-{table}", "date": date},
                 "volumeMounts":   VOLUME_MOUNTS,
-                "initContainers": [git_sync_init_container()],
+                "initContainers": [git_sync_init_container(table)],
             },
 
             # ── Spark config ───────────────────────────────────────────
