@@ -87,7 +87,7 @@ def main():
 
     try:
         spark = build_spark_session(gcp_project)
-        df = read_parquet(spark, gcs_input_path)
+        df = read_parquet(spark, gcs_input_path,AIRBYTE_META_COLS)
         pre_trans_df = extract()
         df_transformed = apply_transformations(pre_trans_df)
         write_to_bq(df_transformed, gcp_project, bq_dataset, bq_table, gcs_temp_bucket)
