@@ -37,8 +37,8 @@ def check_for_schema_drift():
         logger.warn(f"Schema drift detected ({drift_status}) on {CONNECTION_ID} ")
             
             
-
-    logger.info("No schema drift detected. Proceeding with sync...")
+    else:
+        logger.info("No schema drift detected. Proceeding with sync...")
 
 
 
