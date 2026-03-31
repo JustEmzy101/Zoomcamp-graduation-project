@@ -1,0 +1,21 @@
+FROM apache/airflow:3.1.7
+
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    curl \
+    git \
+    procps \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+USER airflow
+
+RUN pip install --no-cache-dir \
+    apache-airflow-providers-airbyte==5.3.2 \
+    apache-airflow-providers-google==19.5.0 \
+    apache-airflow-providers-apache-spark==5.5.0 \
+    airbyte-api==0.53.0 \
+    soda-postgres==4.3.0 \
+    soda-sparkdf==4.3.0 \
