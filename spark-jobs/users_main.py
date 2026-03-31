@@ -66,10 +66,10 @@ def main():
     bq_dataset      = sys.argv[3]
     bq_table        = sys.argv[4]
     gcs_temp_bucket = sys.argv[5]   # e.g. my-bucket-temp
-    date = sys.argv[7]
-    spark = build_spark_session(gcp_project)
+#    date = sys.argv[7]
 
     try:
+        spark = build_spark_session(gcp_project)
         df = read_parquet(spark, gcs_input_path)
         df_transformed = apply_transformations(df)
         write_to_bq(df_transformed, gcp_project, bq_dataset, bq_table, gcs_temp_bucket)
