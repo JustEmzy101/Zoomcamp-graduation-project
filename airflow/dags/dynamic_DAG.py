@@ -110,7 +110,7 @@ def make_spark_app(table: str, date: str) -> dict:
             #             gcs_temp_bucket, gcs_quarantine
             "arguments": [             
                 PROJECT_ID,
-                f"GCS_RAW/{table}",
+                f"{GCS_RAW}/{table}",
                 BQ_DATASET,
                 table,
                 GCS_TEMP_BUCKET,
