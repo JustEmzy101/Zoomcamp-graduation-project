@@ -21,11 +21,11 @@ spec:
 
   arguments:
     - "turing-chess-484608-k4"
-    - "gs://turing-chess-484608-k4-parquet-date/parquet_data/"
-    - "spark_dataset"
-    - "2024_dataset"
-    - "turing-chess-484608-k4-parquet-date"
-    - "gs://turing-chess-484608-k4-parquet-date/quarantine/"
+    - "gs://my-airbyte-raw-landing/raw/public"
+    - "efinance"
+    - "transction_OBT"
+    - "my-airbyte-raw-landing/raw"
+    - "gs://my-airbyte-raw-landing/raw/quarantine"
   sparkVersion: "3.4.0"
   restartPolicy:
     type: Never
