@@ -43,7 +43,7 @@ def read_parquet(spark: SparkSession, gcs_path: str,AIRBYTE_META_COLS):
     logger.info(f"Droppong Airbyte metadata columns")
     cols_to_drop = [c for c in AIRBYTE_META_COLS if c in df.columns]
     if cols_to_drop:
-        logger.info(f"[{TABLE_NAME}] Stripping Airbyte meta cols: {cols_to_drop}")
+        logger.info(f"Stripping Airbyte meta cols: {cols_to_drop}")
         df = df.drop(*cols_to_drop)
     return df
 
