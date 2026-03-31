@@ -108,14 +108,14 @@ def make_spark_app(table: str, date: str) -> dict:
             # ── Per-table CLI arguments ────────────────────────────────
             # Positional: table, date, project_id, gcs_raw, bq_dataset,
             #             gcs_temp_bucket, gcs_quarantine
-            "arguments": [
-                table,
-                date,
+            "arguments": [             
                 PROJECT_ID,
                 f"GCS_RAW/{table}",
                 BQ_DATASET,
+                table,
                 GCS_TEMP_BUCKET,
                 GCS_QUARANTINE,
+                date
             ],
 
             "sparkVersion": SPARK_VERSION,
