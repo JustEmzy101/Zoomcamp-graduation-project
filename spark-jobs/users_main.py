@@ -7,7 +7,28 @@ from pyspark.sql.types import DoubleType, IntegerType, TimestampType
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+AIRBYTE_META_COLS = [
+    "_airbyte_raw_id",
+    "_airbyte_extracted_at",
+    "_airbyte_loaded_at",
+    "_airbyte_meta",
+    "_airbyte_additional_properties",
+]
+def extract(self) -> DataFrame:
+    logger.info(f"[{self.TABLE_NAME}] Reading: {self.gcs_input_path}")
+    df = (
+        self.spark.read
+        .option("mergeSchema", "true")
+        .parquet(self.gcs_input_path)
+    )
 
+    # Drop Airbyte system columns immediately — they must never reach BQ
+    cols_to_drop = [c for c in self.AIRBYTE_META_COLS if c in df.columns]
+    if cols_to_drop:
+        logger.info(f"[{self.TABLE_NAME}] Stripping Airbyte meta cols: {cols_to_drop}")
+        df = df.drop(*cols_to_drop)
+
+    return df
 def build_spark_session(gcp_project: str) -> SparkSession:
     return (
         SparkSession.builder
@@ -71,7 +92,8 @@ def main():
     try:
         spark = build_spark_session(gcp_project)
         df = read_parquet(spark, gcs_input_path)
-        df_transformed = apply_transformations(df)
+        pre_trans_df = extract()
+        df_transformed = apply_transformations(pre_trans_df)
         write_to_bq(df_transformed, gcp_project, bq_dataset, bq_table, gcs_temp_bucket)
     except Exception as e:
         logger.error(f"Job failed: {e}")
