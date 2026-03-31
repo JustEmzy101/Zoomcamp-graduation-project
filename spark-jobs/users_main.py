@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 def build_spark_session(gcp_project: str) -> SparkSession:
     return (
         SparkSession.builder
-        .appName("gcs-to-bq")
+        .appName("user_main")
         .config("spark.hadoop.google.cloud.auth.service.account.enable", "true")
         .config("spark.hadoop.google.cloud.auth.service.account.json.keyfile", "/etc/gcp/key.json")
         .config("spark.hadoop.fs.gs.impl", "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem")
@@ -66,7 +66,7 @@ def main():
     bq_dataset      = sys.argv[3]
     bq_table        = sys.argv[4]
     gcs_temp_bucket = sys.argv[5]   # e.g. my-bucket-temp
-
+    date = sys.argv[7]
     spark = build_spark_session(gcp_project)
 
     try:
