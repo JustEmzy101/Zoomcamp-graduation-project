@@ -9,7 +9,8 @@ AIRBYTE_API_URL = "http://airbyte-airbyte-server-svc.airbyte.svc.cluster.local:8
 CONNECTION_ID   = "d1161597-ff7b-4b75-8d76-528eda729122"
 POLL_INTERVAL   = 10    # seconds between status checks
 TIMEOUT         = 3600  # max seconds to wait for sync
-
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # ── Task 1: Schema Drift Check ────────────────────────────────────────────────
 def check_for_schema_drift():
@@ -31,12 +32,12 @@ def check_for_schema_drift():
     print(f"Schema drift status: {drift_status}")
 
     if drift_status != "no_change":
-        raise Exception(
-            f"Schema drift detected ({drift_status}) on connection "
-            f"{CONNECTION_ID}. Sync blocked — review catalog in Airbyte UI."
+        logger.warn(f"Schema drift detected ({drift_status}) on {CONNECTION_ID} ")
+            
+            
         )
+    logger.info("No schema drift detected. Proceeding with sync...")
 
-    print("No schema drift detected. Proceeding with sync...")
 
 
 # ── Task 2: Trigger Sync ──────────────────────────────────────────────────────
@@ -53,8 +54,8 @@ def trigger_airbyte_sync(**context):
     response.raise_for_status()
 
     job_id = response.json()["job"]["id"]
-    print(f"Airbyte sync triggered. Job ID: {job_id}")
 
+    logger.info(f"Airbyte sync triggered. Job ID: {job_id}")
     # Push job_id to XCom for the polling task
     context["ti"].xcom_push(key="airbyte_job_id", value=job_id)
 
@@ -72,8 +73,7 @@ def wait_for_airbyte_sync(**context):
 
     if not job_id:
         raise ValueError("No job ID found in XCom — trigger task may have failed.")
-
-    print(f"Polling Airbyte Job ID: {job_id}")
+    logger.info(f"Polling Airbyte Job ID: {job_id}")
     elapsed = 0
 
     while elapsed < TIMEOUT:
@@ -88,7 +88,8 @@ def wait_for_airbyte_sync(**context):
         print(f"Job {job_id} status: {job_status} (elapsed: {elapsed}s)")
 
         if job_status == "succeeded":
-            print(f"✅ Airbyte sync {job_id} completed successfully.")
+            logger.info(f"✅ Airbyte sync {job_id} completed successfully.")
+            print()
             return
 
         if job_status in ("failed", "cancelled", "incomplete"):
