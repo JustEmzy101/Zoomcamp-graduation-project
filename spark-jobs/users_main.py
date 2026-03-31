@@ -14,21 +14,12 @@ AIRBYTE_META_COLS = [
     "_airbyte_meta",
     "_airbyte_additional_properties",
 ]
-def extract(self) -> DataFrame:
-    logger.info(f"[{self.TABLE_NAME}] Reading: {self.gcs_input_path}")
-    df = (
-        self.spark.read
-        .option("mergeSchema", "true")
-        .parquet(self.gcs_input_path)
-    )
 
-    # Drop Airbyte system columns immediately — they must never reach BQ
-    cols_to_drop = [c for c in self.AIRBYTE_META_COLS if c in df.columns]
-    if cols_to_drop:
-        logger.info(f"[{self.TABLE_NAME}] Stripping Airbyte meta cols: {cols_to_drop}")
-        df = df.drop(*cols_to_drop)
 
-    return df
+
+   
+
+
 def build_spark_session(gcp_project: str) -> SparkSession:
     return (
         SparkSession.builder
@@ -44,11 +35,16 @@ def build_spark_session(gcp_project: str) -> SparkSession:
     )
 
 
-def read_parquet(spark: SparkSession, gcs_path: str):
+def read_parquet(spark: SparkSession, gcs_path: str,AIRBYTE_META_COLS):
     logger.info(f"Reading parquet from {gcs_path}")
-    df = spark.read.parquet(gcs_path)
+    df = spark.read.parquet(gcs_path).option("mergeSchema", "true")
     logger.info(f"Schema: {df.schema}")
     logger.info(f"Row count: {df.count()}")
+    logger.info(f"Droppong Airbyte metadata columns")
+    cols_to_drop = [c for c in AIRBYTE_META_COLS if c in df.columns]
+    if cols_to_drop:
+        logger.info(f"[{TABLE_NAME}] Stripping Airbyte meta cols: {cols_to_drop}")
+        df = df.drop(*cols_to_drop)
     return df
 
 
