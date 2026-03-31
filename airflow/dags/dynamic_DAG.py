@@ -20,7 +20,7 @@ BQ_JAR          = "https://github.com/GoogleCloudDataproc/spark-bigquery-connect
 
 # Your project args (mirrors your existing manifest arguments style)
 PROJECT_ID      = "turing-chess-484608-k4"
-GCS_RAW         = "gs://my-airbyte-raw-landing/raw/public"
+GCS_RAW         = f"gs://my-airbyte-raw-landing/raw/public/{table}"
 BQ_DATASET      = "efinance"
 GCS_TEMP_BUCKET = "my-airbyte-raw-landing/raw"
 GCS_QUARANTINE  = "gs://my-airbyte-raw-landing/raw/quarantine"
