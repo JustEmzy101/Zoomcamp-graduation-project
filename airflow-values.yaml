@@ -1,0 +1,70 @@
+executor: KubernetesExecutor
+defaultAirflowRepository: custom-airflow
+airflowVersion: "3.1.7"
+defaultAirflowTag: "v1"
+
+images:
+  airflow:
+    repository: custom-airflow
+    tag: "v1"
+    pullPolicy: IfNotPresent
+
+postgresql:
+  enabled: true
+  image:
+    registry: docker.io
+    repository: library/postgres
+    tag: "15"
+    pullPolicy: IfNotPresent
+
+apiServer:
+  replicas: 1
+  service:
+    type: NodePort
+    ports:
+      - name: api-server
+        port: 8080
+        targetPort: 8080
+        nodePort: 32080
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+
+scheduler:
+  replicas: 1
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+
+flower:
+  enabled: false
+redis:
+  enabled: false
+dags:
+  gitSync:
+    enabled: true
+    repo: "https://github.com/JustEmzy101/Zoomcamp-graduation-project.git"
+    branch: "main"
+    rev: "HEAD"
+    depth: 1
+    subPath: "airflow/dags"
+    maxFailures: 3
+    wait: 60 # Interval in seconds between syncs
+    # If using a private repo, you would provide a secret for sshKey or credentials
+    # sshKeySecret: airflow-git-ssh-secret
+logs:
+  persistence:
+    enabled: true
+    size: 10Gi
+    existingClaim: airflow-logs-pvc
+config:
+  core:
+    test_connection: "Enabled"

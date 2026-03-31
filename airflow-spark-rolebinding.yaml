@@ -1,0 +1,13 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: airflow-spark-rolebinding
+  namespace: spark
+subjects:
+  - kind: ServiceAccount
+    name: airflow-worker          # the airflow worker SA
+    namespace: airflow            # where airflow lives
+roleRef:
+  kind: Role
+  name: airflow-spark-role
+  apiGroup: rbac.authorization.k8s.io

@@ -1,0 +1,1 @@
+34.53.188.177 airflow-ui-static-ip

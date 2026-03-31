@@ -1,0 +1,27 @@
+MDRhZmRiMTQtMWYzNC00ZjliLWFmOGQtZWZjMGQ5MzBmNWI4
+ZTQ2NjI0NGYzODllMWQ3MjNjZDIxZDRiNDQ3ZWJlOGUzZTAyMzcxNDU5ZjJjOWFhZjRjNDViMTdiNDBiOTgxNw==
+
+dec 04afdb14-1f34-4f9b-af8d-efc0d930f5b8
+
+dec secret e466244f389e1d723cd21d4b447ebe8e3e02371459f2c9aaf4c45b17b40b9817
+
+curl --request POST \
+     --url localhost:8001/api/public/v1/applications/token \
+     --header 'accept: application/json' \
+     --header 'content-type: application/json' \
+     --data '
+{
+  "client_id": "04afdb14-1f34-4f9b-af8d-efc0d930f5b8",
+  "client_secret": "e466244f389e1d723cd21d4b447ebe8e3e02371459f2c9aaf4c45b17b40b9817",
+  "grant-type": "client_credentials"
+}
+'
+
+  c82db11b-64df-413d-aba8-ee66b99c046f
+
+
+  kubectl create secret generic airbyte-auth-secrets -n airbyte \
+  --from-literal=instance-admin-email="admin@admin.com" \
+  --from-literal=instance-admin-password="admin" \
+  --from-literal=instance-admin-client-id="04afdb14-1f34-4f9b-af8d-efc0d930f5b8" \
+  --from-literal=instance-admin-client-secret="e466244f389e1d723cd21d4b447ebe8e3e02371459f2c9aaf4c45b17b40b9817"

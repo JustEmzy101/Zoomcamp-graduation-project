@@ -1,0 +1,25 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: airflow-worker-role
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "pods/log", "services", "configmaps"]
+    verbs: ["get", "list", "watch", "create", "update", "delete", "patch"]
+  - apiGroups: ["sparkoperator.k8s.io"] # Optional: Only if using Spark Operator
+    resources: ["sparkapplications"]
+    verbs: ["create", "get", "list", "update", "delete", "patch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: airflow-worker-role-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: airflow-worker-role
+subjects:
+  - kind: ServiceAccount
+    name: airflow-worker # The default name used by many Airflow Helm charts
+    namespace: airflow

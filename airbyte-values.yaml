@@ -1,0 +1,45 @@
+global:
+  edition: "community"
+  auth:
+    enabled: false
+    
+
+server:
+  env_vars:
+    AIRBYTE_EDITION: "community"
+    DEPLOYMENT_MODE: "OSS"
+  resources:
+    limits:
+      memory: "1Gi"
+      cpu: "1"
+
+workload-api-server:
+  containerPort: 8007
+
+workload-launcher:
+  env_vars:
+    AIRBYTE_EDITION: "community"
+    DEPLOYMENT_MODE: "OSS"
+    DATA_PLANE_ID: "local"
+    CONTROL_PLANE_AUTH_ENDPOINT: "http://airbyte-airbyte-server-svc:8001"
+    WORKLOAD_API_HOST: "http://airbyte-workload-api-server-svc:8007"
+    # Remove the empty credential fields to avoid valueFrom conflict
+    # DATA_PLANE_SERVICE_ACCOUNT_EMAIL: ""
+    # DATA_PLANE_SERVICE_ACCOUNT_CREDENTIALS_PATH: ""
+
+postgresql:
+  enabled: true
+
+minio:
+  enabled: true
+
+worker:
+  resources:
+    limits:
+      memory: "1Gi"
+      cpu: "1"
+
+webapp:
+  service:
+    type: NodePort
+    nodePort: 30080

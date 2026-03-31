@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: airbyte-workload-api-server
+  namespace: airbyte
+spec:
+  selector:
+    app: airbyte-workload-api-server   # same labels as your existing service
+  ports:
+    - port: 8007
+      targetPort: 8007
+      protocol: TCP
+  type: ClusterIP
