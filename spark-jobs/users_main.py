@@ -37,7 +37,7 @@ def build_spark_session(gcp_project: str) -> SparkSession:
 
 def read_parquet(spark: SparkSession, gcs_path: str,AIRBYTE_META_COLS):
     logger.info(f"Reading parquet from {gcs_path}")
-    df = spark.read.parquet(gcs_path).option("mergeSchema", "true")
+    df = spark.read.option("mergeSchema", "true").parquet(gcs_path)
     logger.info(f"Schema: {df.schema}")
     logger.info(f"Row count: {df.count()}")
     logger.info(f"Droppong Airbyte metadata columns")
