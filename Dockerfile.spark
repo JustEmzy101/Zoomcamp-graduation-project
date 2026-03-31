@@ -1,0 +1,12 @@
+FROM apache/spark-py:v3.4.0
+
+# GCS and BigQuery connectors
+ADD https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-hadoop3-latest.jar /opt/spark/jars/
+ADD https://github.com/GoogleCloudDataproc/spark-bigquery-connector/releases/download/0.34.0/spark-bigquery-with-dependencies_2.12-0.34.0.jar /opt/spark/jars/
+
+USER root
+RUN pip install --no-cache-dir \
+    google-cloud-storage==2.14.0 \
+    google-cloud-bigquery==3.17.0
+
+USER spark
