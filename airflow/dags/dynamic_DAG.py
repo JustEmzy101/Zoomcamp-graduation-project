@@ -187,7 +187,7 @@ with DAG(
     load_users = SparkKubernetesOperator(
         task_id="load_users",
         namespace=NAMESPACE,
-        application_file=make_spark_app("users", date),
+        application_file=yaml.dump(make_spark_app("users", date)),
         kubernetes_conn_id="kubernetes_default",
         do_xcom_push=False,
         poll_interval=10,       # seconds between status polls
