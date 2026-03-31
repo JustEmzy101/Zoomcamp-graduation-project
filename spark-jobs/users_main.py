@@ -15,11 +15,6 @@ AIRBYTE_META_COLS = [
     "_airbyte_additional_properties",
 ]
 
-
-
-   
-
-
 def build_spark_session(gcp_project: str) -> SparkSession:
     return (
         SparkSession.builder
