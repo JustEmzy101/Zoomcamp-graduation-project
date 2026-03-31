@@ -27,7 +27,8 @@ GCS_QUARANTINE  = "gs://my-airbyte-raw-landing/raw/quarantine"
 
 default_args = {
     "owner": "Marwan-Mohamed",
-    "retries": 2,
+    "retry_on_failure": False,  # remove it after testing
+    "retries": 1,
     "retry_delay": timedelta(minutes=5),
     "email_on_failure": False, # you can setup the connection for email in Airflow and turn this true
     "email": ["mmzidane101@gmail.com"],
@@ -149,7 +150,7 @@ def make_spark_app(table: str, date: str) -> dict:
                 "memory":         exc["memory"],
                 "memoryOverhead": exc["memoryOverhead"],
                 "labels":         {"app": f"etl-{table}", "date": date},
-                "volumeMounts":   VOLUME_MOUNTS,
+                "volumeMounts":   VOLUME_MOUNTS[1],
                 "initContainers": [git_sync_init_container(table)],
             },
 
