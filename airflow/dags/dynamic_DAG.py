@@ -192,5 +192,29 @@ with DAG(
         do_xcom_push=False,
         poll_interval=10,       # seconds between status polls
     )
+    load_accounts = SparkKubernetesOperator(
+        task_id="load_accounts",
+        namespace=NAMESPACE,
+        application_file=yaml.dump(make_spark_app("accounts", date)),
+        kubernetes_conn_id="kubernetes_default",
+        do_xcom_push=False,
+        poll_interval=10,       # seconds between status polls
+    )
+    load_transactions = SparkKubernetesOperator(
+        task_id="load_transactions",
+        namespace=NAMESPACE,
+        application_file=yaml.dump(make_spark_app("transactions", date)),
+        kubernetes_conn_id="kubernetes_default",
+        do_xcom_push=False,
+        poll_interval=10,       # seconds between status polls
+    )
+    load_audit = SparkKubernetesOperator(
+        task_id="load_audit",
+        namespace=NAMESPACE,
+        application_file=yaml.dump(make_spark_app("audit", date)),
+        kubernetes_conn_id="kubernetes_default",
+        do_xcom_push=False,
+        poll_interval=10,       # seconds between status polls
+    )
 
-load_users
+[load_users,load_accounts] >> load_transactions >> load_audit
