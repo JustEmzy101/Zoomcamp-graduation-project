@@ -1,5 +1,6 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 from datetime import datetime
 import requests
 import time
@@ -35,7 +36,7 @@ def check_for_schema_drift():
         logger.warn(f"Schema drift detected ({drift_status}) on {CONNECTION_ID} ")
             
             
-        )
+
     logger.info("No schema drift detected. Proceeding with sync...")
 
 
@@ -129,4 +130,12 @@ with DAG(
         python_callable=wait_for_airbyte_sync,
     )
 
-    check_drift >> trigger_sync >> wait_for_sync
+    processing_dag = TriggerDagRunOperator(
+        task_id='trigger_target',
+        trigger_dag_id='spark_using_kubeflow_operator',
+        execution_date='{{ ds }}',
+        reset_dag_run=True,
+        wait_for_completion=False
+    )
+
+    check_drift >> trigger_sync >> wait_for_sync >> processing_dag
