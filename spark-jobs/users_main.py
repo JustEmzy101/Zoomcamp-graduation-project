@@ -13,6 +13,13 @@ AIRBYTE_META_COLS = [
     "_airbyte_loaded_at",
     "_airbyte_meta",
     "_airbyte_additional_properties",
+    "_ab_cdc_updated_at",
+    "_ab_cdc_deleted_at",
+    "_ab_cdc_lsn",
+    "kyc_status",
+    "created_at",
+    "_airbyte_emitted_at",
+    "_airbyte_ab_id"
 ]
 
 def build_spark_session(gcp_project: str) -> SparkSession:
