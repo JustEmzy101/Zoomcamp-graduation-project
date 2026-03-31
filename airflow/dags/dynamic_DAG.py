@@ -174,7 +174,7 @@ def make_spark_app(table: str, date: str) -> dict:
 with DAG(
     dag_id="spark-self-submetting-manifest",
     schedule=None,
-    start_date=datetime(2025, 1, 1),
+    start_date=None,
     catchup=False,
     tags=["kubeflow","spark", "gcs", "bigquery", "github"],
     max_active_runs=1,
