@@ -134,7 +134,7 @@ with DAG(
     processing_dag = TriggerDagRunOperator(
         task_id='trigger_target',
         trigger_dag_id='spark_using_kubeflow_operator',
-        execution_date='{{ ds }}',
+        logical_date='{{ ds }}',
         reset_dag_run=True,
         wait_for_completion=False
     )
