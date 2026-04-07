@@ -131,12 +131,6 @@ with DAG(
         python_callable=wait_for_airbyte_sync,
     )
 
-    processing_dag = TriggerDagRunOperator(
-        task_id='trigger_target',
-        trigger_dag_id='spark-self-submetting-manifest',
-        logical_date='{{ ds }}',
-        reset_dag_run=True,
-        wait_for_completion=False
-    )
+   
 
-    check_drift >> trigger_sync >> wait_for_sync >> processing_dag
+    check_drift >> trigger_sync >> wait_for_sync 
