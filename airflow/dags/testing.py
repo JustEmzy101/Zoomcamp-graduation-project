@@ -108,7 +108,7 @@ def wait_for_airbyte_sync(**context):
 
 # ── DAG Definition ────────────────────────────────────────────────────────────
 with DAG(
-    dag_id="airbyte_k3s_drift_protection",
+    dag_id="drift_detection_on_airbyte_YAY",
     start_date=datetime(2024, 1, 1),
     schedule=None,
     catchup=False,
