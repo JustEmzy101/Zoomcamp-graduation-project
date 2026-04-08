@@ -122,15 +122,15 @@ with DAG(
         python_callable=check_for_schema_drift,
     )
 
-    trigger_sync = PythonOperator(
-        task_id="trigger_airbyte_sync",
-        python_callable=trigger_airbyte_sync,
-    )
+#    trigger_sync = PythonOperator(
+#        task_id="trigger_airbyte_sync",
+#        python_callable=trigger_airbyte_sync,
+#    )
 
-    wait_for_sync = PythonOperator(
-        task_id="wait_for_airbyte_sync",
-        python_callable=wait_for_airbyte_sync,
-    )
+#    wait_for_sync = PythonOperator(
+#        task_id="wait_for_airbyte_sync",
+#        python_callable=wait_for_airbyte_sync,
+#    )
 
    
 
