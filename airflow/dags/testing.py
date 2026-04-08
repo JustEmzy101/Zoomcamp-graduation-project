@@ -23,6 +23,20 @@ TIMEOUT         = 3600  # max seconds to wait for sync
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
+def returning_json_response():
+        response = requests.post(
+        f"{AIRBYTE_API_URL}/web_backend/connections/get",
+        json={
+            "connectionId": CONNECTION_ID,
+            "withRefreshedCatalog": True
+        },
+        timeout=60,
+    )
+    response.raise_for_status()
+    full_response = response.json()
+    return full_response
+
 # ── Task 1: Schema Drift Check ────────────────────────────────────────────────
 def check_for_schema_drift():
     """
@@ -167,7 +181,7 @@ with DAG(
 
     validate_schema = PythonOperator(
         task_id="validate_data_schema_before_triggering_sync",
-        python_callable=validate_schema,
+        python_callable=validate_schema(returning_json_response),
     )
 
 #    trigger_sync = PythonOperator(
