@@ -65,7 +65,8 @@ def validate_schema():
     timeout=60,
     )
     response.raise_for_status()
-    streams = response.get("syncCatalog", {}).get("streams", [])
+    full_response = response.json()
+    streams = full_response.get("syncCatalog", {}).get("streams", [])
 
     for stream_entry in streams:
         stream_name = stream_entry["stream"]["name"]
