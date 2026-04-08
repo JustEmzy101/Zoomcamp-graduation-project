@@ -173,16 +173,16 @@ with DAG(
         python_callable=validate_schema,
     )
 
-#    trigger_sync = PythonOperator(
-#        task_id="trigger_airbyte_sync",
-#        python_callable=trigger_airbyte_sync,
-#    )
+    trigger_sync = PythonOperator(
+        task_id="trigger_airbyte_sync",
+        python_callable=trigger_airbyte_sync,
+    )
 
-#    wait_for_sync = PythonOperator(
-#        task_id="wait_for_airbyte_sync",
-#        python_callable=wait_for_airbyte_sync,
-#    )
+    wait_for_sync = PythonOperator(
+        task_id="wait_for_airbyte_sync",
+        python_callable=wait_for_airbyte_sync,
+    )
 
    
 
-    check_drift >> validate_schema
+    check_drift >> validate_schema >> trigger_sync >> wait_for_sync
