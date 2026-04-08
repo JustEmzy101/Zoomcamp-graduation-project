@@ -67,15 +67,7 @@ def check_for_schema_drift():
 # --- Check if crucial columns are missing before triggering a sync --------------
 
 def validate_schema(response_json):
-    response = requests.post(
-    f"{AIRBYTE_API_URL}/web_backend/connections/get",
-    json={
-        "connectionId": CONNECTION_ID,
-        "withRefreshedCatalog": True
-    },
-    timeout=60,
-    )
-    response.raise_for_status()
+
 
     streams = response_json.get("syncCatalog", {}).get("streams", [])
 
@@ -181,7 +173,7 @@ with DAG(
 
     validate_schema = PythonOperator(
         task_id="validate_data_schema_before_triggering_sync",
-        python_callable=validate_schema(returning_json_response),
+        python_callable=validate_schema(returning_json_response()),
     )
 
 #    trigger_sync = PythonOperator(
