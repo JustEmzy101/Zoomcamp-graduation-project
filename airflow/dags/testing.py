@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 
 # ── Task 1: Schema Drift Check ────────────────────────────────────────────────
-def check_for_schema_drift():
+def check_for_schema_drift(**kwargs):
     """
     Calls Airbyte's web_backend to check if the source schema for aibyte functions "airbyte Metadata columns" has drifted.
     Blocks the sync if drift is detected
@@ -44,7 +44,7 @@ def check_for_schema_drift():
     logger.info(f"{full_response}")
     drift_status = response.json().get("schemaChange", "no_change")
     print(f"Schema drift status: {drift_status}")
-    context["ti"].xcom_push(key="response_json", value=full_response)
+    kwargs["ti"].xcom_push(key="response_json", value=full_response)
     if drift_status != "no_change":
         logger.warn(f"Schema drift detected ({drift_status}) on {CONNECTION_ID} ")
             
@@ -56,7 +56,7 @@ def check_for_schema_drift():
 
 def validate_schema(**kwargs):
 
-    response_json = context["ti"].xcom_pull(
+    response_json = kwargs["ti"].xcom_pull(
         task_ids="check_schema_drift",
         key="response_json"
     )
