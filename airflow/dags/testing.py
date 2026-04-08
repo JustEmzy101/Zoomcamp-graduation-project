@@ -165,7 +165,7 @@ with DAG(
         python_callable=check_for_schema_drift,
     )
 
-    check_drift = PythonOperator(
+    validate_schema = PythonOperator(
         task_id="validate_data_schema_before_triggering_sync",
         python_callable=validate_schema,
     )
@@ -182,4 +182,4 @@ with DAG(
 
    
 
-    check_drift 
+    check_drift >> validate_schema
