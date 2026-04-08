@@ -29,7 +29,8 @@ def check_for_schema_drift():
         timeout=60,
     )
     response.raise_for_status()
-
+    full_response = response.json()
+    logger.info(f"{full_response}")
     drift_status = response.json().get("schemaChange", "no_change")
     print(f"Schema drift status: {drift_status}")
 
