@@ -5,6 +5,15 @@ from datetime import datetime
 import requests
 import time
 import logging
+import sys
+
+
+EXPECTED_SCHEMA = {
+    #"accounts": {"account_id", "balance", "user_id", "currency", "_ab_cdc_updated_at", "_ab_cdc_deleted_at", "_ab_cdc_lsn"},
+    #"audit": {"log_id", "transaction_id", "performed_by", "action", "timestamp", "_ab_cdc_updated_at", "_ab_cdc_deleted_at", "_ab_cdc_lsn"},
+    #"transactions": {"transaction_id", "amount", "from_account", "to_account", "type", "status", "timestamp", "_ab_cdc_updated_at", "_ab_cdc_deleted_at", "_ab_cdc_lsn"},
+    "users": {"user_id", "first_name","last_name", "email", "country", "kyc_status", "marital_status", "created_at", "_ab_cdc_updated_at", "_ab_cdc_deleted_at", "_ab_cdc_lsn"},
+}
 
 # ── Config ────────────────────────────────────────────────────────────────────
 AIRBYTE_API_URL = "http://airbyte-airbyte-server-svc.airbyte.svc.cluster.local:8001/api/v1"
@@ -17,7 +26,7 @@ logger = logging.getLogger(__name__)
 # ── Task 1: Schema Drift Check ────────────────────────────────────────────────
 def check_for_schema_drift():
     """
-    Calls Airbyte's web_backend to check if the source schema has drifted.
+    Calls Airbyte's web_backend to check if the source schema for aibyte functions "airbyte Metadata columns" has drifted.
     Blocks the sync if drift is detected
     """
     response = requests.post(
@@ -41,6 +50,40 @@ def check_for_schema_drift():
     else:
         logger.info("No schema drift detected. Proceeding with sync...")
 
+# --- Check if crucial columns are missing before triggering a sync --------------
+
+def validate_schema(response_json):
+    response = requests.post(
+    f"{AIRBYTE_API_URL}/web_backend/connections/get",
+    json={
+        "connectionId": CONNECTION_ID,
+        "withRefreshedCatalog": True
+    },
+    timeout=60,
+    )
+    response.raise_for_status()
+
+    streams = response_json.get("syncCatalog", {}).get("streams", [])
+
+    for stream_entry in streams:
+        stream_name = stream_entry["stream"]["name"]
+        actual_columns = set(stream_entry["stream"]["jsonSchema"]["properties"].keys())
+
+        expected_columns = EXPECTED_SCHEMA.get(stream_name)
+
+        if expected_columns is None:
+            print(f"[WARNING] Stream '{stream_name}' is not in expected schema, skipping...")
+            continue
+
+        missing_columns = expected_columns - actual_columns
+
+        if missing_columns:
+            print(f"[ERROR] Stream '{stream_name}' is missing columns: {missing_columns}")
+            sys.exit(1)  # Stop everything
+
+        print(f"[OK] Stream '{stream_name}' schema is valid.")
+
+    print("[SUCCESS] All stream schemas are valid. Proceeding with extraction...")
 
 
 # ── Task 2: Trigger Sync ──────────────────────────────────────────────────────
@@ -120,6 +163,11 @@ with DAG(
     check_drift = PythonOperator(
         task_id="check_schema_drift",
         python_callable=check_for_schema_drift,
+    )
+
+    check_drift = PythonOperator(
+        task_id="validate_data_schema_before_triggering_sync",
+        python_callable=validate_schema,
     )
 
 #    trigger_sync = PythonOperator(
