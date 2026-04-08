@@ -25,13 +25,13 @@ logger = logging.getLogger(__name__)
 
 
 def returning_json_response():
-        response = requests.post(
-        f"{AIRBYTE_API_URL}/web_backend/connections/get",
-        json={
-            "connectionId": CONNECTION_ID,
-            "withRefreshedCatalog": True
-        },
-        timeout=60,
+    response = requests.post(
+    f"{AIRBYTE_API_URL}/web_backend/connections/get",
+    json={
+        "connectionId": CONNECTION_ID,
+        "withRefreshedCatalog": True
+    },
+    timeout=60,
     )
     response.raise_for_status()
     full_response = response.json()
