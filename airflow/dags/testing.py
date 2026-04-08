@@ -24,18 +24,6 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def returning_json_response():
-    response = requests.post(
-    f"{AIRBYTE_API_URL}/web_backend/connections/get",
-    json={
-        "connectionId": CONNECTION_ID,
-        "withRefreshedCatalog": True
-    },
-    timeout=60,
-    )
-    response.raise_for_status()
-    full_response = response.json()
-    return full_response
 
 # ── Task 1: Schema Drift Check ────────────────────────────────────────────────
 def check_for_schema_drift():
@@ -56,7 +44,7 @@ def check_for_schema_drift():
     logger.info(f"{full_response}")
     drift_status = response.json().get("schemaChange", "no_change")
     print(f"Schema drift status: {drift_status}")
-
+    context["ti"].xcom_push(key="response_json", value=full_response)
     if drift_status != "no_change":
         logger.warn(f"Schema drift detected ({drift_status}) on {CONNECTION_ID} ")
             
@@ -66,9 +54,12 @@ def check_for_schema_drift():
 
 # --- Check if crucial columns are missing before triggering a sync --------------
 
-def validate_schema(response_json):
+def validate_schema(**kwargs):
 
-
+    response_json = context["ti"].xcom_pull(
+        task_ids="check_schema_drift",
+        key="response_json"
+    )
     streams = response_json.get("syncCatalog", {}).get("streams", [])
 
     for stream_entry in streams:
@@ -173,7 +164,7 @@ with DAG(
 
     validate_schema = PythonOperator(
         task_id="validate_data_schema_before_triggering_sync",
-        python_callable=validate_schema(response_json=returning_json_response()),
+        python_callable=validate_schema(),
     )
 
 #    trigger_sync = PythonOperator(
