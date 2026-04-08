@@ -134,4 +134,4 @@ with DAG(
 
    
 
-    check_drift # >> trigger_sync >> wait_for_sync 
+    check_drift 
