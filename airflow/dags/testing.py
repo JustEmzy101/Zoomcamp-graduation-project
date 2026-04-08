@@ -173,7 +173,7 @@ with DAG(
 
     validate_schema = PythonOperator(
         task_id="validate_data_schema_before_triggering_sync",
-        python_callable=validate_schema(response_jsn=returning_json_response()),
+        python_callable=validate_schema(response_json=returning_json_response()),
     )
 
 #    trigger_sync = PythonOperator(
