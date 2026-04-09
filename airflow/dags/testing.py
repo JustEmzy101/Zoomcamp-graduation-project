@@ -67,6 +67,7 @@ def validate_schema():
     response.raise_for_status()
     full_response = response.json()
     streams = full_response.get("syncCatalog", {}).get("streams", [])
+    existing_tables = {entry["stream"]["name"] for entry in streams}
 
     missing_tables = set(EXPECTED_SCHEMA.keys()) - existing_tables
     if missing_tables:
