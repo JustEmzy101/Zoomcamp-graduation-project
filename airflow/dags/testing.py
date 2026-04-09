@@ -43,10 +43,10 @@ def check_for_schema_drift():
     full_response = response.json()
     logger.info(f"{full_response}")
     drift_status = response.json().get("schemaChange", "no_change")
-    print(f"Schema drift status: {drift_status}")
+    logger.info(f"Schema drift status: {drift_status}")
     
     if drift_status != "no_change":
-        logger.warn(f"Schema drift detected ({drift_status}) on {CONNECTION_ID} ")
+        logger.warn(f"Airbyte's Schema drift detected ({drift_status}) on {CONNECTION_ID} ")
             
             
     else:
@@ -71,8 +71,10 @@ def validate_schema():
 
     missing_tables = set(EXPECTED_SCHEMA.keys()) - existing_tables
     if missing_tables:
-        print(f"[ERROR] Missing tables in source: {missing_tables}")
+        logger.error(f"Missing tables in source: {missing_tables}")
         sys.exit(1)
+    else:
+        logger.info("All required tables exists. Proceeding with column existence check...")
         
     for stream_entry in streams:
         stream_name = stream_entry["stream"]["name"]
@@ -81,18 +83,18 @@ def validate_schema():
         expected_columns = EXPECTED_SCHEMA.get(stream_name)
 
         if expected_columns is None:
-            print(f"[WARNING] Stream '{stream_name}' is not in expected schema, skipping...")
+
+            logger.warn(f"[WARNING] Stream '{stream_name}' is not in expected schema, skipping...")
             continue
 
         missing_columns = expected_columns - actual_columns
 
         if missing_columns:
-            print(f"[ERROR] Stream '{stream_name}' is missing columns: {missing_columns}")
+            logger.error(f"ERROR Stream '{stream_name}' is missing columns: {missing_columns}")
             sys.exit(1)  # Stop everything
 
-        print(f"[OK] Stream '{stream_name}' schema is valid.")
-
-    print("[SUCCESS] All stream schemas are valid. Proceeding with extraction...")
+        logger.info(f"Stream '{stream_name}' schema is valid.")
+    logger.info("All stream schemas/tables are valid. Proceeding with extraction...")
 
 
 # ── Task 2: Trigger Sync ──────────────────────────────────────────────────────
