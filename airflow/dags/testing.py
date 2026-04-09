@@ -9,9 +9,9 @@ import sys
 
 
 EXPECTED_SCHEMA = {
-    #"accounts": {"account_id", "balance", "user_id", "currency", "_ab_cdc_updated_at", "_ab_cdc_deleted_at", "_ab_cdc_lsn"},
-    #"audit": {"log_id", "transaction_id", "performed_by", "action", "timestamp", "_ab_cdc_updated_at", "_ab_cdc_deleted_at", "_ab_cdc_lsn"},
-    #"transactions": {"transaction_id", "amount", "from_account", "to_account", "type", "status", "timestamp", "_ab_cdc_updated_at", "_ab_cdc_deleted_at", "_ab_cdc_lsn"},
+    "accounts": {"account_id", "balance", "user_id", "currency", "_ab_cdc_updated_at", "_ab_cdc_deleted_at", "_ab_cdc_lsn"},
+    "audit": {"log_id", "transaction_id", "performed_by", "action", "timestamp", "_ab_cdc_updated_at", "_ab_cdc_deleted_at", "_ab_cdc_lsn"},
+    "transactions": {"transaction_id", "amount", "from_account", "to_account", "type", "status", "timestamp", "_ab_cdc_updated_at", "_ab_cdc_deleted_at", "_ab_cdc_lsn"},
     "users": {"user_id", "first_name","last_name", "email", "country", "kyc_status", "marital_status", "created_at", "_ab_cdc_updated_at", "_ab_cdc_deleted_at", "_ab_cdc_lsn"},
 }
 
