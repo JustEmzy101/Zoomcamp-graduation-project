@@ -38,5 +38,4 @@ query-comment:
   comment: "Airflow DAG run - {{ target.name }} - {{ run_started_at }}"
   append: true
 
-log-level: info
-partial_parse: true
+
