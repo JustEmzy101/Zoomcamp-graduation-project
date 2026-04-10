@@ -20,7 +20,7 @@ with DAG(
         task_id='run_dbt_models',
         name='dbt-run',
         namespace='default',
-        image='docker.io/library/dbt-bigquery:v1',
+        image='docker.io/dbt-bigquery:v2',
         
         cmds=["/bin/bash", "-c"],
         arguments=[
