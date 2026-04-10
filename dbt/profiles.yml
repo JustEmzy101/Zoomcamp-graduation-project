@@ -1,0 +1,18 @@
+
+my_bigquery_profile:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: service-account
+      project: "{{ env_var('GCP_PROJECT_ID') }}"
+      dataset: "{{ env_var('BQ_DATASET') }}"
+      threads: 4
+      keyfile: "{{ env_var('GOOGLE_APPLICATION_CREDENTIALS') }}"
+    prod:
+      type: bigquery
+      method: service-account
+      project: "{{ env_var('GCP_PROJECT_ID') }}"
+      dataset: "{{ env_var('BQ_PROD_DATASET') }}"
+      threads: 8
+      keyfile: "{{ env_var('GOOGLE_APPLICATION_CREDENTIALS') }}"
