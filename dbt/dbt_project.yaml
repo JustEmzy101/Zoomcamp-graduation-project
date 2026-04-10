@@ -1,1 +1,42 @@
+name: 'data_transformation'
+version: '1.0.0'
+config-version: 2
 
+profile: 'my_bigquery_profile'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+        # Final analytics tables
+    marts:
+      +materialized: table
+      +schema: analytics
+      +tags: ['marts', 'analytics']
+      +persist_docs:
+        relation: true
+        columns: true
+
+    
+
+tests:
+  data_transformation:
+    +store_failures: true
+    +schema: test_failures
+
+
+
+query-comment:
+  comment: "Airflow DAG run - {{ target.name }} - {{ run_started_at }}"
+  append: true
+
+log-level: info
+partial_parse: true
