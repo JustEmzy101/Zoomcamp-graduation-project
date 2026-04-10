@@ -32,7 +32,7 @@ with DAG(
         
         env_vars={
             'GCP_PROJECT_ID': 'turing-chess-484608-k4',
-            'BQ_DATASET': 'turing-chess-484608-k4.Staging',
+            'BQ_DATASET': 'Staging',
             'GOOGLE_APPLICATION_CREDENTIALS': '/secrets/dbt-sa-key.json',
         },
         
