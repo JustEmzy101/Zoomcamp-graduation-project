@@ -1,6 +1,6 @@
 with transactions_raw as (
     select *
-    from {{ ref('stg_transactions') }}
+    from {{ ref('dbt_stg_transactions') }}
     where _ab_cdc_deleted_at is null
 ),
 
