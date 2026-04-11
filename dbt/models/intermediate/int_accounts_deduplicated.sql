@@ -5,7 +5,7 @@ with ranked as (
             partition by account_id
             order by _ab_cdc_lsn desc, _airbyte_extracted_at desc
         ) as row_num
-    from {{ ref('stg_accounts') }}
+    from {{ ref('dbt_stg_accounts') }}
     where _ab_cdc_deleted_at is null  -- exclude soft-deleted records (if desired)
 )
 
