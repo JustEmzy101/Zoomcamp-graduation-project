@@ -5,7 +5,7 @@ with ranked as (
             partition by log_id
             order by _ab_cdc_lsn desc, _airbyte_extracted_at desc
         ) as row_num
-    from {{ ref('stg_audit') }}
+    from {{ ref('dbt_stg_audit') }}
     where _ab_cdc_deleted_at is null
 )
 
