@@ -16,14 +16,31 @@ clean-targets:
   - "dbt_packages"
 
 models:
-        # Final analytics tables
+  finance_analytics:
+    staging:
+      +materialized: view
+      +schema: staging
+    intermediate:
+      +materialized: ephemeral
     marts:
       +materialized: table
       +schema: analytics
-      +tags: ['marts', 'analytics']
-      +persist_docs:
-        relation: true
-        columns: true
+      dim_accounts:
+        +materialized: table
+      dim_users:
+        +materialized: table
+      fct_transactions:
+        +materialized: incremental
+        +partition_by:
+          field: transaction_date
+          data_type: date
+          granularity: day
+      fct_audit:
+        +materialized: table
+        +partition_by:
+          field: event_date
+          data_type: date
+          granularity: day
 
     
 
