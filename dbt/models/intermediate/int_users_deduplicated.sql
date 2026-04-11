@@ -5,7 +5,7 @@ with ranked as (
             partition by user_id
             order by _ab_cdc_lsn desc, _airbyte_extracted_at desc
         ) as row_num
-    from {{ ref('stg_users') }}
+    from {{ ref('dbt_stg_users') }}
     where _ab_cdc_deleted_at is null
 )
 
