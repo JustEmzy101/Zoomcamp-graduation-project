@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: raw
+    database: "{{ env_var('GCP_PROJECT_ID') }}"
+    schema: Staging  
+    tables:
+      - name: stg_accounts
+      - name: stg_audit
+      - name: stg_transactions
+      - name: stg_users
